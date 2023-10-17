@@ -82,12 +82,25 @@ function add_discount_without_tax( $cart ) {
                     $discount = (($cart_item['data']->get_price()) * $discount_percentage * $product_quantity) / 100;
                     
                     // Apply the discount.
-                    WC()->cart->add_fee('Discount for KMO products', -$discount, false);
+                    WC()->cart->add_fee('Nieuw subtotaal (te gebruiken in KMO-dossier)', -$discount, false);
                 }
             }
         }
     }
 };
+
+// Customize the display of a specific fee amount in the cart
+add_filter('woocommerce_cart_totals_fee_html', 'wc_custom_specific_fee_amount_display', 10, 2);
+
+function wc_custom_specific_fee_amount_display($fee_html, $fee) {
+    // Check if the fee name matches the specific fee you want to customize
+    if ($fee->id == 'nieuw-subtotaal-te-gebruiken-in-kmo-dossier') {
+        // If the fee starts with a minus sign, add a space after it
+        $fee_html = str_replace('-', '', $fee_html);
+    }
+
+    return $fee_html;
+}
 
 add_action( 'woocommerce_check_cart_items', 'wc_prevent_checkout_for_KMO' );
 function wc_prevent_checkout_for_KMO() {
